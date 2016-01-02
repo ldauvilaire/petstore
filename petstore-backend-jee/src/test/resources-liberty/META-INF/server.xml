@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<server description="Integration Test Server">
+
+	<featureManager>
+		<!-- JMX and Servlet support - required by Arquillian -->
+		<!-- https://docs.jboss.org/author/display/ARQ/WLP+V8.5+-+Managed -->
+		<feature>localConnector-1.0</feature>
+        <feature>javaee-7.0</feature>
+	</featureManager>
+
+	<httpEndpoint id="defaultHttpEndpoint" host="localhost" httpPort="9080" />
+
+	<library id="H2Lib">
+		<fileset dir="${shared.resource.dir}/h2" includes="*.jar" />
+	</library>
+
+	<jdbcDriver id="H2Driver"
+	            libraryRef="H2Lib"
+	            javax.sql.DataSource="org.h2.jdbcx.JdbcDataSource" />
+
+	<dataSource jndiName="${petstore.datasource.jndi.name}"
+	            jdbcDriverRef="H2Driver"
+	            type="javax.sql.DataSource">
+		<connectionManager maxPoolSize="5" minPoolSize="1" numConnectionsPerThreadLocal="1" />
+		<properties URL="jdbc:h2:mem:test;DB_CLOSE_DELAY=-1" />
+	</dataSource>
+
+	<!-- dropins support and mbean trigger required by Arquillian -->
+	<applicationMonitor dropinsEnabled="true" updateTrigger="mbean" />
+
+</server>
